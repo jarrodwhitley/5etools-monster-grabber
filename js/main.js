@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    
     function reAlignment(array) {
         let alignmentLetterKey = {
             "L": "Lawful",
@@ -82,24 +83,18 @@ document.addEventListener("DOMContentLoaded", () => {
          .replace(/{@h}/, 'Hit: ')
          .replace(/{@recharge (\d+)}/, 'Recharge $1-6')
          .replace(/{@damage (\d+d\d+)(\s?[+-]\s?\d+)?}/, '$1$2')
-            .replace(/{@condition (\w+)}/, '$1')
-            .replace(/{@spell (\w+)}/, '$1');
+         .replace(/{@condition (\w+)}/, '$1')
+         .replace(/{@spell (\w+)}/, '$1');
     }
     
     function reActions(array) {
         let actionsArray = [];
         array.forEach((action) => {
-            if (action.name === 'Shortsword') {
-                console.log('action', action);
-            }
             let actionObject = {
                 "name": removeRollCharacters(action.name),
                 "desc": removeRollCharacters(action.entries[0]),
             }
             actionsArray.push(actionObject);
-            if (action.name === 'Shortsword') {
-                console.log('actionsArray', actionsArray);
-            }
         });
         return actionsArray;
     }
@@ -233,7 +228,6 @@ document.addEventListener("DOMContentLoaded", () => {
         copyJsonToClipboard(restructuredData);
     }
     
-    // Add download button
     document.querySelector('body').insertAdjacentHTML('beforeend', `<div id="downloadAsJson" class="button">Download</div>`);
     let downloadBtn = document.querySelector('#downloadAsJson');
     
@@ -246,6 +240,5 @@ document.addEventListener("DOMContentLoaded", () => {
         restructureData(data);
     });
     
-    // Add copied banner
     document.querySelector('body').insertAdjacentHTML('beforeend', `<div id="copiedMessage">Copied!</div>`)
 });

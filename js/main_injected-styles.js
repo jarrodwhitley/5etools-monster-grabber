@@ -14,6 +14,7 @@ style.innerHTML = `
   right: 10px;
   top: 20%;
 }
+
 #copiedMessage {
 position: fixed;
 top: 0;
@@ -24,10 +25,10 @@ background: indianred;
 color: white;
 text-align: center;
 display: none;
-
-&.show {
-display: block;
 }
+
+#copiedMessage.show {
+display: block;
 }`
 document.head.appendChild(style);
 
@@ -261,7 +262,6 @@ document.addEventListener("DOMContentLoaded", () => {
         copyJsonToClipboard(restructuredData);
     }
     
-    // Add download button
     document.querySelector('body').insertAdjacentHTML('beforeend', `<div id="downloadAsJson" class="button">Download</div>`);
     let downloadBtn = document.querySelector('#downloadAsJson');
     
@@ -270,11 +270,9 @@ document.addEventListener("DOMContentLoaded", () => {
             shiftKey: true,
         });
         document.querySelector('button[title*="Source"]').dispatchEvent(event);
-        // get the content of the <pre> element inside .hwin
         let data = JSON.parse(document.querySelector('.hwin pre').textContent);
         restructureData(data);
     });
     
-    // Add copied banner
     document.querySelector('body').insertAdjacentHTML('beforeend', `<div id="copiedMessage">Copied!</div>`)
 });

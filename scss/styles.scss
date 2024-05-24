@@ -13,10 +13,6 @@
   top: 20%;
 }
 
-.page-heading {
-	position: relative;
-}
-
 #copiedMessage {
 	position: fixed;
 	top: 0;
@@ -27,8 +23,8 @@
 	color: white;
 	text-align: center;
 	display: none;
-	
-	&.show {
-		display: block;
-	}
+}
+
+#copiedMessage.show {
+	display: block;
 }

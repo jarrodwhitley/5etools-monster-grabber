@@ -11,7 +11,6 @@ Copy the JSON data of a creature from 5etools.com and restructure the data to fi
 - Add option to download JSON
 - Move buttons to extension popup rather than inject them into the page
 
-
 ## How to test
 1. Download the repository
 2. Open Chrome and navigate to `chrome://extensions/`

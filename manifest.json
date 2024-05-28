@@ -1,0 +1,21 @@
+{
+    "manifest_version": 3,
+    "name": "5etools Monster Grabber",
+    "description": "Base Level Extension",
+    "version": "1.0",
+    "action": {
+        "default_popup": "monster_grabber.html",
+        "default_icon": "monster_grabber_icon.png"
+    },
+    "permissions": [
+        "activeTab", "scripting"
+    ],
+    "content_scripts": [
+        {
+            "matches": ["https://*.5e.tools/*"],
+            "js": ["contentScript.js"]
+        }
+    ],
+    "optional_permissions": ["tabs"],
+    "optional_host_permissions": ["https://www.5e.tools/"]
+}

@@ -1,4 +1,11 @@
-document.addEventListener("DOMContentLoaded", () => {
+(() => {
+    // add a button to the page
+    // add a <button> to the .wrp-stat-tab element
+    const button = document.createElement('button');
+    button.id = 'copyJson';
+    button.textContent = 'Copy JSON';
+    button.style = 'background-color: indianred; color: white; border: none; margin-left: 5px; border-radius: 3px 3px 0 0; cursor: pointer;';
+    document.querySelector('.wrp-stat-tab').appendChild(button);
     
     function reAlignment(array) {
         let alignmentLetterKey = {
@@ -75,16 +82,16 @@ document.addEventListener("DOMContentLoaded", () => {
          replace {@spell spellName} with "spellName"
          */
         return string.replace(/{@hit (\d+)}/, '+$1')
-         .replace(/{@damage (\d+d\d+)(\s?[+-]\s?\d+)?}/, '$1$2')
-         .replace(/{@atk ms,rs}/, 'Melee or Ranged Spell Attack')
-         .replace(/{@atk mw}/, 'Melee Weapon Attack')
-         .replace(/{@atk rw}/, 'Ranged Weapon Attack')
-         .replace(/{@dc (\d+)}/, ' DC $1')
-         .replace(/{@h}/, 'Hit: ')
-         .replace(/{@recharge (\d+)}/, 'Recharge $1-6')
-         .replace(/{@damage (\d+d\d+)(\s?[+-]\s?\d+)?}/, '$1$2')
-         .replace(/{@condition (\w+)}/, '$1')
-         .replace(/{@spell (\w+)}/, '$1');
+            .replace(/{@damage (\d+d\d+)(\s?[+-]\s?\d+)?}/, '$1$2')
+            .replace(/{@atk ms,rs}/, 'Melee or Ranged Spell Attack')
+            .replace(/{@atk mw}/, 'Melee Weapon Attack')
+            .replace(/{@atk rw}/, 'Ranged Weapon Attack')
+            .replace(/{@dc (\d+)}/, ' DC $1')
+            .replace(/{@h}/, 'Hit: ')
+            .replace(/{@recharge (\d+)}/, 'Recharge $1-6')
+            .replace(/{@damage (\d+d\d+)(\s?[+-]\s?\d+)?}/, '$1$2')
+            .replace(/{@condition (\w+)}/, '$1')
+            .replace(/{@spell (\w+)}/, '$1');
     }
     
     function reActions(array) {
@@ -164,7 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     function openJsonInNewTab(data) {
         const json = JSON.stringify(data, null, 2);
-        const blob = new Blob([json], { type: 'application/json' });
+        const blob = new Blob([json], {type: 'application/json'});
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
     }
@@ -177,19 +184,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const json = JSON.stringify(data, null, 2);
         navigator.clipboard.writeText(json);
         closeJsonModal();
-        copiedMessage();
-    }
-    
-    function copiedMessage() {
-        let banner = document.querySelector('#copiedMessage');
-        banner.style.display = 'block';
-        setTimeout(() => {
-            banner.style.display = 'none';
-        }, 2000);
     }
     
     function restructureData(data) {
-        const restructuredData = {
+        return {
             "name": data.name,
             "hit_points": data.hp.average,
             "hit_dice": reHitDice(data.hp.formula),
@@ -224,21 +222,25 @@ document.addEventListener("DOMContentLoaded", () => {
             "skills": getObjectKeys(data.skill),
             "avatar": document.querySelector('#float-token img').src,
         };
-        
-        copyJsonToClipboard(restructuredData);
     }
     
-    document.querySelector('body').insertAdjacentHTML('beforeend', `<div id="downloadAsJson" class="button">Download</div>`);
-    let downloadBtn = document.querySelector('#downloadAsJson');
-    
-    downloadBtn.addEventListener('click', function() {
+    function grabMonster() {
         let event = new MouseEvent('click', {
             shiftKey: true,
         });
         document.querySelector('button[title*="Source"]').dispatchEvent(event);
         let data = JSON.parse(document.querySelector('.hwin pre').textContent);
-        restructureData(data);
-    });
+        copyJsonToClipboard(restructureData(data));
+        document.querySelector('#copyJson').style.width = document.querySelector('#copyJson').offsetWidth + 'px';
+        document.querySelector('#copyJson').textContent = 'Copied!';
+        document.querySelector('#copyJson').style.backgroundColor = '#5cb85c';
+        setTimeout(() => {
+            document.querySelector('#copyJson').textContent = 'Copy JSON';
+            document.querySelector('#copyJson').style.backgroundColor = 'indianred';
+        }, 2000);
+    }
     
-    document.querySelector('body').insertAdjacentHTML('beforeend', `<div id="copiedMessage">Copied!</div>`)
-});
+    document.querySelector('#copyJson').addEventListener('click', function () {
+        grabMonster();
+    });
+})();

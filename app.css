@@ -1,0 +1,25 @@
+body {
+    background: black;
+    width: 250px;
+    margin: 0 auto;
+}
+
+
+.container {
+    background: #333;
+    font-family: Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.heading {
+    margin: 0;
+    color: white;
+    font-size: 18px;
+}

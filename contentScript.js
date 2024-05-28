@@ -1,10 +1,10 @@
 (() => {
-    // add a button to the page
-    // add a <button> to the .wrp-stat-tab element
     const button = document.createElement('button');
     button.id = 'copyJson';
     button.textContent = 'Copy JSON';
-    button.style = 'background-color: indianred; color: white; border: none; margin-left: 5px; border-radius: 3px 3px 0 0; cursor: pointer;';
+    let buttonStyleStr = 'background: linear-gradient(to bottom, #ce0000, #8a0000); color: white; border: none; margin-left: 5px; border-radius: 3px 3px 0 0; cursor: pointer;';
+    let buttonStyleStrGreen = 'background: linear-gradient(to bottom, #5cb85c, #366c36); color: white; border: none; margin-left: 5px; border-radius: 3px 3px 0 0; cursor: pointer;';
+    button.style = buttonStyleStr;
     document.querySelector('.wrp-stat-tab').appendChild(button);
     
     function reAlignment(array) {
@@ -52,6 +52,7 @@
     }
     
     function reHitDice(string) {
+        if (!string) return;
         return string.replace(/\+.*/, '').replace(/\s/g, '');
     }
     
@@ -145,6 +146,7 @@
     }
     
     function reChallengeRating(string) {
+        if (!string) return;
         if (string.includes('/')) {
             let fraction = string.split('/');
             return Number(fraction[0]) / Number(fraction[1]);
@@ -233,10 +235,10 @@
         copyJsonToClipboard(restructureData(data));
         document.querySelector('#copyJson').style.width = document.querySelector('#copyJson').offsetWidth + 'px';
         document.querySelector('#copyJson').textContent = 'Copied!';
-        document.querySelector('#copyJson').style.backgroundColor = '#5cb85c';
+        document.querySelector('#copyJson').style.buttonStyleStrGreen;
         setTimeout(() => {
             document.querySelector('#copyJson').textContent = 'Copy JSON';
-            document.querySelector('#copyJson').style.backgroundColor = 'indianred';
+            document.querySelector('#copyJson').style.buttonStyleStr;
         }, 2000);
     }
     

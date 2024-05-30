@@ -96,13 +96,94 @@
     }
     
     function reActions(array) {
+        console.table(array);
         let actionsArray = [];
         array.forEach((action) => {
-            let actionObject = {
-                "name": removeRollCharacters(action.name),
-                "desc": removeRollCharacters(action.entries[0]),
+            console.log('')
+            console.log('**-------', action.name, '-------**')
+            let descString = removeRollCharacters(action.entries[0])
+            console.log('descString', descString)
+            // if descString does not contain a + then alert('hi')
+            if (!descString.includes('+')) {
+                let actionObject = {
+                    "name": removeRollCharacters(action.name),
+                    "desc": removeRollCharacters(action.entries[0]),
+                }
+                actionsArray.push(actionObject);
+            } else {
+                let [type, reach, roll] = descString.split(',');
+                if (!type || !reach || !roll) return;
+                console.table(
+                    {
+                        type,
+                        reach,
+                        roll
+                    }
+                )
+                let attackType = type.split('+')[0].trim();
+                let attackBonus = type.split('+')[1]
+                attackBonus = Number(attackBonus.split(' ')[0]);
+                let attackReach = Number(reach.split('reach ')[1].split(' ')[0]);
+                let attackAverage = Number(roll.split('Hit: ')[1].split(' ')[0]);
+                let targetCount = roll.split('target')[0].trim();
+                let remainder = roll.split(')')[1].trim();
+                let damageType = remainder.split(' ')[0];
+                let damageDiceRoll = roll.split('(')[1].split(')')[0];
+                let dice = damageDiceRoll.split(' +')[0];
+                let diceCount = Number(dice.split('d')[0]);
+                let diceType = Number(dice.split('d')[1]);
+                let fixedValue = Number(damageDiceRoll.split('+ ')[1]);
+                
+                console.table({
+                    descString,
+                    attackBonus,
+                    attackType,
+                    attackReach,
+                    attackAverage,
+                    targetCount,
+                    damageType,
+                    damageDiceRoll,
+                    dice,
+                    diceCount,
+                    diceType,
+                    fixedValue,
+                    remainder
+                })
+                
+                let typeKey = {
+                    "Melee Weapon Attack": "melee_weapon",
+                    "Ranged Weapon Attack": "ranged_weapon",
+                    "Melee or Ranged Spell Attack": "melee_or_ranged_spell",
+                }
+                attackType = typeKey[attackType];
+                
+                let attackRolls = [
+                    {
+                        special: [],
+                        damage_type: damageType,
+                        dice_count: diceCount,
+                        dice_type: diceType,
+                        fixed_val: fixedValue,
+                        miss_mod: 0
+                    }]
+                
+                let actionList = [
+                    {
+                        "attack_bonus": attackBonus,
+                        "rolls": attackRolls,
+                        "type": attackType
+                    }
+                ]
+                
+                let actionObject = {
+                    "name": removeRollCharacters(action.name),
+                    "desc": removeRollCharacters(action.entries[0]),
+                    "reach": Number(attackReach),
+                    "action_list": actionList
+                }
+                actionsArray.push(actionObject);
             }
-            actionsArray.push(actionObject);
+            
         });
         return actionsArray;
     }

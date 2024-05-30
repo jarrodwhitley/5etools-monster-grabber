@@ -6,6 +6,9 @@ Copy the JSON data of a creature from 5etools.com and restructure the data to fi
 ## Known Issues
 - Some stats are not being copied over if their value is different from most creatures (Aberrant Spirit, for example)
 
+## To-dos
+- Fix breath weapon (and similar abilities)
+
 ## Features to be considered:
 - Add option to open JSON in a new tab
 - Add option to download JSON

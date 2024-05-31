@@ -85,6 +85,8 @@
         if (!string) return
         return string.replace(/{@hit (\d+)}/, '+$1')
             .replace(/{@damage (\d+d\d+)(\s?[+-]\s?\d+)?}/, '$1$2')
+            .replace(/{@atk ms}/, 'Melee Spell Attack')
+            .replace(/{@atk rs}/, 'Ranged Spell Attack')
             .replace(/{@atk ms,rs}/, 'Melee or Ranged Spell Attack')
             .replace(/{@atk mw}/, 'Melee Weapon Attack')
             .replace(/{@atk rw}/, 'Ranged Weapon Attack')
@@ -92,8 +94,8 @@
             .replace(/{@h}/, 'Hit: ')
             .replace(/{@recharge (\d+)}/, '')
             .replace(/{@damage (\d+d\d+)(\s?[+-]\s?\d+)?}/, '$1$2')
-            .replace(/{@condition (\w+)}/, '$1')
             .replace(/{@spell (\w+)}/, '$1')
+            .replace(/{@condition (\w+)}/, '$1')
             .trim();
     }
     
@@ -114,6 +116,18 @@
         return actionRecharge;
     }
     
+    function getAttackDistance(input, type) {
+        if (!input) return;
+        if (type === 'reach') {
+            let reach = input.split('reach ')[1]?.split(' ')[0];
+            if (reach) return Number(reach);
+        }
+        if (type === 'range') {
+            let range = input.split('range ')[1]?.split(' ')[0];
+            if (range) return range.toString();
+        }
+    }
+    
     function reActions(array) {
         let actionsArray = [];
         array.forEach((action) => {
@@ -122,7 +136,7 @@
             if (!descString.includes('+') && action.entries.length === 1) { // Handle non-attack actions
                 let actionObject = {
                     name: removeRollCharacters(action.name),
-                    desc: removeRollCharacters(action.entries[0]),
+                    desc: removeRollCharacters(removeRollCharacters(action.entries[0])), // FIXME: Figure out why I have to run this function twice...one day haha
                     recharge: checkRecharge(action.name),
                 }
                 actionsArray.push(actionObject);
@@ -156,7 +170,7 @@
 
                 actionsArray.push({
                     name: removeRollCharacters(action.name),
-                    desc: sectionsString,
+                    desc: removeRollCharacters(sectionsString),
                     recharge: checkRecharge(action.name)
                 })
                 
@@ -166,8 +180,7 @@
                 let attackType = type.split('+')[0].trim();
                 let attackBonus = type.split('+')[1]
                 attackBonus = Number(attackBonus.split(' ')[0]);
-                let attackReach = Number(reach.split('reach ')[1].split(' ')[0]);
-                let attackAverage = Number(roll.split('Hit: ')[1].split(' ')[0]);
+                let attackAverage = Number(roll.split('Hit: ')[1]?.split(' ')[0]);
                 let targetCount = roll.split('target')[0].trim();
                 let remainder = roll.split(')')[1].trim();
                 let damageType = remainder.split(' ')[0];
@@ -221,7 +234,8 @@
                 let actionObject = {
                     name: removeRollCharacters(action.name),
                     desc: removeRollCharacters(action.entries[0]),
-                    reach: Number(attackReach),
+                    reach: getAttackDistance(reach, 'reach'),
+                    range: getAttackDistance(reach, 'range'),
                     action_list: actionList,
                 }
                 actionsArray.push(actionObject);

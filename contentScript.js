@@ -339,8 +339,17 @@
     function reDamageImmunities(input, type) {
         if (typeof input === 'string') {
             return input;
-        } else if (input.length > 0) {
-            return input
+        } else if (input.length > 0) { // Array that may contain strings or objects
+            let immunitiesArray = [];
+            input.forEach((item) => {
+                if (typeof item === 'string') {
+                    immunitiesArray.push(item);
+                } else if (typeof item === 'object') {
+                    immunitiesArray = item.immune;
+                    addNonLoadableProperties(type, item.note);
+                }
+            });
+            return immunitiesArray;
         } else if (typeof input === 'object') {
             addNonLoadableProperties(type, input[0].note);
             return input[0].immune;

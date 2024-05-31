@@ -311,10 +311,40 @@
                 input.push(item);
             } else if (typeof item === 'object') {
                 let arr = item.resist
-                arr.forEach((item) => {
-                    input.push(item);
-                })
-                addNonLoadableProperties(type, item.note);
+                let special = item.special
+                if (!arr && special) {
+                    resistancesArray.push(special);
+                } else {
+                    arr.forEach((item) => {
+                        resistancesArray.push(item);
+                    })
+                    addNonLoadableProperties(type, item.note);
+                }
+            }
+        })
+        let resistanceTypes = [
+            "non_magical_bludgeoning",
+            "non_magical_piercing",
+            "non_magical_slashing",
+            "bludgeoning",
+            "piercing",
+            "slashing",
+            "acid",
+            "cold",
+            "fire",
+            "force",
+            "lightning",
+            "necrotic",
+            "poison",
+            "psychic",
+            "radiant",
+            "thunder"
+        ]
+        // if a value in resistancesArray does not match any of the resistanceTypes, add it to nonLoadableProperties and remove it from the array
+        resistancesArray.forEach((resistance) => {
+            if (!resistanceTypes.includes(resistance)) {
+                addNonLoadableProperties(type, resistance);
+                resistancesArray = resistancesArray.filter((item) => item !== resistance);
             }
         })
         return resistancesArray;
@@ -337,6 +367,7 @@
     }
     
     function reDamageImmunities(input, type) {
+        if (!input) return
         if (typeof input === 'string') {
             return input;
         } else if (input.length > 0) { // Array that may contain strings or objects

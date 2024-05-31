@@ -303,9 +303,21 @@
         return armorClass;
     }
     
-    function reResistances(array) {
-        if (!array) return;
-        return array.resist;
+    function reResistances(input, type) {
+        if (!input) return;
+        let resistancesArray = [];
+        input.forEach((item) => {
+            if (typeof input === 'string') {
+                input.push(item);
+            } else if (typeof item === 'object') {
+                let arr = item.resist
+                arr.forEach((item) => {
+                    input.push(item);
+                })
+                addNonLoadableProperties(type, item.note);
+            }
+        })
+        return resistancesArray;
     }
     
     function getWalkSpeed(input, type) {
@@ -325,8 +337,11 @@
     }
     
     function reDamageImmunities(input, type) {
-        if (typeof input === 'string') return input;
-        if (typeof input === 'object') {
+        if (typeof input === 'string') {
+            return input;
+        } else if (input.length > 0) {
+            return input
+        } else if (typeof input === 'object') {
             addNonLoadableProperties(type, input[0].note);
             return input[0].immune;
         }
@@ -381,7 +396,7 @@
             charisma: data.cha,
             saving_throws: reSavingThrows(data.save),
             condition_immunities: data.conditionImmune,
-            damage_resistances: reResistances(data.resist),
+            damage_resistances: reResistances(data.resist, 'Damage Resistances'),
             damage_immunities: reDamageImmunities(data.immune, 'Damage Immunities'),
             damage_vulnerabilities: data.vulnerable,
             special_abilities: reSpecialAbilities(data.trait),
@@ -392,8 +407,6 @@
     }
     
     function createNonLoadableModal(array) {
-        // let arr = array.filter((v,i,a)=>a.findIndex(t=>(t.content === v.content))===i);
-        
         let modal = document.createElement('div');
         modal.id = 'modal';
         modal.style = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; z-index: 10';

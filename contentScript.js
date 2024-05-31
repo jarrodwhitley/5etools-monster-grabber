@@ -88,6 +88,7 @@
             .replace(/{@atk ms}/, 'Melee Spell Attack')
             .replace(/{@atk rs}/, 'Ranged Spell Attack')
             .replace(/{@atk ms,rs}/, 'Melee or Ranged Spell Attack')
+            .replace(/{@atk mw,rw}/, 'Melee or Ranged Weapon Attack')
             .replace(/{@atk mw}/, 'Melee Weapon Attack')
             .replace(/{@atk rw}/, 'Ranged Weapon Attack')
             .replace(/{@dc (\d+)}/, ' DC $1')
@@ -124,6 +125,7 @@
         }
         if (type === 'range') {
             let range = input.split('range ')[1]?.split(' ')[0];
+            if (range) return range.toString();
             if (range) return range.toString();
         }
     }
@@ -175,7 +177,17 @@
                 })
                 
             } else { // Handle attack actions
+                // 	"{@atk mw,rw} {@hit 4} to hit, reach 5 ft. or range 20/60 ft., one creature. {@h}5 ({@damage 1d6 + 2}) piercing damage, or 6 ({@damage 1d8 + 2}) piercing damage if used with two hands to make a melee attack."
+                console.log('str before', descString)
+                descString = removeRollCharacters(descString);
+                console.log('str after', descString)
                 let [type, reach, roll] = descString.split(',');
+                console.table({
+                    descString,
+                    type,
+                    reach,
+                    roll
+                })
                 if (!type || !reach || !roll) return;
                 let attackType = type.split('+')[0].trim();
                 let attackBonus = type.split('+')[1]
@@ -305,6 +317,12 @@
         return array.resist;
     }
     
+    function getWalkSpeed(object) {
+        if (typeof object === 'number') return object;
+        if (typeof object === 'object') return object.number;
+        return object;
+    }
+    
     function capitalize(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
@@ -336,7 +354,7 @@
             subtype: data.subtype,
             alignment: reAlignment(data.alignment),
             armor_class: reArmorClass(data.ac),
-            walk_speed: data.speed.walk,
+            walk_speed: getWalkSpeed(data.speed.walk),
             swim_speed: data.speed?.swim,
             fly_speed: reFly(data.speed?.fly),
             burrow_speed: data.speed?.burrow,

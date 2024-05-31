@@ -396,7 +396,7 @@
         
         let modal = document.createElement('div');
         modal.id = 'modal';
-        modal.style = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center;';
+        modal.style = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; z-index: 10';
         
         let modalContent = document.createElement('div');
         modalContent.style = 'color: #333; width: 500px; background: white; padding: 20px; border-radius: 5px; position: relative;';

@@ -8,6 +8,7 @@ Copy the JSON data of a creature from 5etools.com and restructure the data to fi
 
 ## To-dos
 [ ] Fix breath weapon (and similar abilities)
+
 [ ] Error reporting for non-loadable properties
 
 ## Features to be considered:

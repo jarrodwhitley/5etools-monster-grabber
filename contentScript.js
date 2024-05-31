@@ -177,17 +177,8 @@
                 })
                 
             } else { // Handle attack actions
-                // 	"{@atk mw,rw} {@hit 4} to hit, reach 5 ft. or range 20/60 ft., one creature. {@h}5 ({@damage 1d6 + 2}) piercing damage, or 6 ({@damage 1d8 + 2}) piercing damage if used with two hands to make a melee attack."
-                console.log('str before', descString)
                 descString = removeRollCharacters(descString);
-                console.log('str after', descString)
                 let [type, reach, roll] = descString.split(',');
-                console.table({
-                    descString,
-                    type,
-                    reach,
-                    roll
-                })
                 if (!type || !reach || !roll) return;
                 let attackType = type.split('+')[0].trim();
                 let attackBonus = type.split('+')[1]
@@ -323,6 +314,22 @@
         return object;
     }
     
+    function addNonLoadableProperties(type, content) {
+        let property = type + ' - ' + content;
+        if (!nonLoadableProperties.includes(property)) {
+            nonLoadableProperties.push(property);
+        }
+        console.table(nonLoadableProperties);
+    }
+    
+    function reDamageImmunities(input, type) {
+        if (typeof input === 'string') return input;
+        if (typeof input === 'object') {
+            addNonLoadableProperties(type, input[0].note);
+            return input[0].immune;
+        }
+    }
+    
     function capitalize(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
@@ -373,7 +380,7 @@
             saving_throws: reSavingThrows(data.save),
             condition_immunities: data.conditionImmune,
             damage_resistances: reResistances(data.resist),
-            damage_immunities: data.immune,
+            damage_immunities: reDamageImmunities(data.immune, 'Damage Immunities'),
             damage_vulnerabilities: data.vulnerable,
             special_abilities: reSpecialAbilities(data.trait),
             actions: reActions(data.action),
@@ -397,7 +404,48 @@
             document.querySelector('#copyJson').textContent = 'Copy JSON';
             document.querySelector('#copyJson').style.buttonStyleStr;
         }, 2000);
+        
+        // Modal for non-loadable properties
+        if (nonLoadableProperties.length > 0) {
+            console.log('nonLoadableProperties', nonLoadableProperties);
+            nonLoadableProperties = nonLoadableProperties.filter((v,i,a)=>a.findIndex(t=>(t.content === v.content))===i);
+            
+            let modal = document.createElement('div');
+            modal.id = 'modal';
+            modal.style = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center;';
+            
+            let modalContent = document.createElement('div');
+            modalContent.style = 'color: #333; width: 500px; background: white; padding: 20px; border-radius: 5px; position: relative;';
+            
+            let modalTitle = document.createElement('h3');
+            modalTitle.style = 'color: #333;';
+            modalTitle.textContent = 'Non-loadable properties';
+            modalContent.appendChild(modalTitle);
+            
+            let modalDescription = `<strong>The creature JSON data as been copied to your clipboard,</strong> but some data was not loadable. Please add these manually in Shieldmaiden.`;
+            modalContent.innerHTML += modalDescription;
+            
+            let closeButton = document.createElement('button');
+            closeButton.textContent = 'Close';
+            closeButton.style = 'color: black; border: none; border-radius: 3px 3px 0 0; cursor: pointer; position: absolute; top: 5px; right: 5px;';
+            closeButton.addEventListener('click', function () {
+                document.body.removeChild(modal);
+            });
+            modalContent.appendChild(closeButton);
+            
+            let ul = document.createElement('ul');
+            modalContent.appendChild(ul);
+            nonLoadableProperties.forEach((property) => {
+                let li = document.createElement('li');
+                li.textContent = property;
+                ul.appendChild(li);
+            });
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+        }
     }
+    
+    let nonLoadableProperties = [];
     
     document.querySelector('#copyJson').addEventListener('click', function () {
         grabMonster();

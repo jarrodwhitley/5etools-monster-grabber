@@ -8,6 +8,7 @@
     document.querySelector('.wrp-stat-tab').appendChild(button);
     
     function reAlignment(array) {
+        if (!array) return;
         let alignmentLetterKey = {
             "L": "Lawful",
             "N": "Neutral",
@@ -85,16 +86,18 @@
         if (!string) return
         return string.replace(/{@hit (\d+)}/, '+$1')
             .replace(/{@damage (\d+d\d+)(\s?[+-]\s?\d+)?}/, '$1$2')
-            .replace(/{@atk ms}/, 'Melee Spell Attack')
-            .replace(/{@atk rs}/, 'Ranged Spell Attack')
-            .replace(/{@atk ms,rs}/, 'Melee or Ranged Spell Attack')
-            .replace(/{@atk mw,rw}/, 'Melee or Ranged Weapon Attack')
-            .replace(/{@atk mw}/, 'Melee Weapon Attack')
-            .replace(/{@atk rw}/, 'Ranged Weapon Attack')
+            .replace(/{@damage (\d+d\d+)(\s?[+-]\s?\d+)?(\s?[+-]\s?summonSpellLevel)?}/, '$1$2$3')
+            .replace(/{@atk ms}/, 'Melee Spell Attack:')
+            .replace(/{@atk rs}/, 'Ranged Spell Attack:')
+            .replace(/{@atk ms,rs}/, 'Melee or Ranged Spell Attack:')
+            .replace(/{@atk mw,rw}/, 'Melee or Ranged Weapon Attack:')
+            .replace(/{@atk mw}/, 'Melee Weapon Attack:')
+            .replace(/{@atk rw}/, 'Ranged Weapon Attack:')
             .replace(/{@dc (\d+)}/, ' DC $1')
             .replace(/{@h}/, 'Hit: ')
+            .replace(/{@hitYourSpellAttack}/, 'your spell attack modifier')
+            .replace(/{@recharge}/, '')
             .replace(/{@recharge (\d+)}/, '')
-            .replace(/{@damage (\d+d\d+)(\s?[+-]\s?\d+)?}/, '$1$2')
             .replace(/{@spell (\w+)}/, '$1')
             .replace(/{@condition (\w+)}/, '$1')
             .trim();
@@ -103,11 +106,12 @@
     function checkRecharge(string) {
         if (!string) return;
         let actionRecharge;
-        if (string.includes('recharge')) {
+        if (string.includes('{@recharge}')) {
+            actionRecharge = "6";
+        } else if (string.includes('recharge')) {
             let rechargeKey = {
                 "4": "4-6",
                 "5": "5-6",
-                "6": "6",
             }
             let recharge = string.match(/recharge (\d+)/);
             if (recharge) {
@@ -178,36 +182,41 @@
                 
             } else { // Handle attack actions
                 descString = removeRollCharacters(descString);
+                console.log(descString);
                 let [type, reach, roll] = descString.split(',');
                 if (!type || !reach || !roll) return;
+                console.table({
+                    type,
+                    reach,
+                    roll
+                })
                 let attackType = type.split('+')[0].trim();
-                let attackBonus = type.split('+')[1]
-                attackBonus = Number(attackBonus.split(' ')[0]);
-                let attackAverage = Number(roll.split('Hit: ')[1]?.split(' ')[0]);
+                let attackBonus = type.split('+')[1] || 0;
+                if (attackBonus) attackBonus = Number(attackBonus.split(' ')[0]) || 0;
+                let attackAverage = Number(roll.split('Hit: ')[1]?.split(' ')[0]) || 0;
                 let targetCount = roll.split('target')[0].trim();
-                let remainder = roll.split(')')[1].trim();
-                let damageType = remainder.split(' ')[0];
-                let damageDiceRoll = roll.split('(')[1].split(')')[0];
-                let dice = damageDiceRoll.split(' +')[0];
-                let diceCount = Number(dice.split('d')[0]);
-                let diceType = Number(dice.split('d')[1]);
-                let fixedValue = Number(damageDiceRoll.split('+ ')[1]);
+                let remainder = roll?.split(')')[1]?.trim();
+                let damageType = remainder?.split(' ')[0];
+                let damageDiceRoll = roll?.split('(')[1]?.split(')')[0];
+                let dice = damageDiceRoll?.split(' +')[0];
+                let diceCount = Number(dice?.split('d')[0]);
+                let diceType = Number(dice?.split('d')[1]);
+                let fixedValue = Number(damageDiceRoll?.split('+ ')[1]);
                 
-                // console.table({
-                //     descString,
-                //     attackBonus,
-                //     attackType,
-                //     attackReach,
-                //     attackAverage,
-                //     targetCount,
-                //     damageType,
-                //     damageDiceRoll,
-                //     dice,
-                //     diceCount,
-                //     diceType,
-                //     fixedValue,
-                //     remainder
-                // })
+                console.table({
+                    descString,
+                    attackBonus,
+                    attackType,
+                    attackAverage,
+                    targetCount,
+                    damageType,
+                    damageDiceRoll,
+                    dice,
+                    diceCount,
+                    diceType,
+                    fixedValue,
+                    remainder
+                })
                 
                 let typeKey = {
                     "Melee Weapon Attack": "melee_weapon",
@@ -286,13 +295,18 @@
         return param;
     }
     
-    function reChallengeRating(string) {
-        if (!string) return;
-        if (string.includes('/')) {
-            let fraction = string.split('/');
-            return Number(fraction[0]) / Number(fraction[1]);
+    function reChallengeRating(input, type) {
+        if (!input) return;
+        if (typeof input === 'string') {
+            if (input.includes('/')) {
+                let fraction = input.split('/');
+                return Number(fraction[0]) / Number(fraction[1]);
+            }
+            return Number(input);
+        } else if (typeof input === 'object') {
+            addNonLoadableProperties(type, input.lair + ' (Lair)');
         }
-        return Number(string);
+        return Number(input.cr);
     }
     
     function reArmorClass(array) {
@@ -424,7 +438,7 @@
             burrow_speed: data.speed?.burrow,
             climb_speed: data.speed?.climb,
             languages: data.languages,
-            challenge_rating: reChallengeRating(data.cr),
+            challenge_rating: reChallengeRating(data.cr, 'Challenge Rating'),
             proficiency: data.proficiency,
             friendly: data.friendly,
             senses: reSense(data.senses),
@@ -467,6 +481,7 @@
         closeButton.style = 'color: black; border: none; border-radius: 3px 3px 0 0; cursor: pointer; position: absolute; top: 5px; right: 5px;';
         closeButton.addEventListener('click', function () {
             document.body.removeChild(modal);
+            nonLoadableProperties = [];
         });
         modalContent.appendChild(closeButton);
         

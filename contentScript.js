@@ -9,6 +9,10 @@
     
     function reAlignment(array) {
         if (!array) return;
+        if (array.includes('NX') || array.includes('NY')) {
+            addNonLoadableProperties('Alignment', 'Non-standard alignment');
+            return;
+        }
         let alignmentLetterKey = {
             "L": "Lawful",
             "N": "Neutral",
@@ -182,14 +186,14 @@
                 
             } else { // Handle attack actions
                 descString = removeRollCharacters(descString);
-                console.log(descString);
+                // console.log(descString);
                 let [type, reach, roll] = descString.split(',');
                 if (!type || !reach || !roll) return;
-                console.table({
-                    type,
-                    reach,
-                    roll
-                })
+                // console.table({
+                //     type,
+                //     reach,
+                //     roll
+                // })
                 let attackType = type.split('+')[0].trim();
                 let attackBonus = type.split('+')[1] || 0;
                 if (attackBonus) attackBonus = Number(attackBonus.split(' ')[0]) || 0;
@@ -203,27 +207,20 @@
                 let diceType = Number(dice?.split('d')[1]);
                 let fixedValue = Number(damageDiceRoll?.split('+ ')[1]);
                 
-                console.table({
-                    descString,
-                    attackBonus,
-                    attackType,
-                    attackAverage,
-                    targetCount,
-                    damageType,
-                    damageDiceRoll,
-                    dice,
-                    diceCount,
-                    diceType,
-                    fixedValue,
-                    remainder
-                })
-                
-                let typeKey = {
-                    "Melee Weapon Attack": "melee_weapon",
-                    "Ranged Weapon Attack": "ranged_weapon",
-                    "Melee or Ranged Spell Attack": "melee_or_ranged_spell",
-                }
-                attackType = typeKey[attackType];
+                // console.table({
+                //     descString,
+                //     attackBonus,
+                //     attackType,
+                //     attackAverage,
+                //     targetCount,
+                //     damageType,
+                //     damageDiceRoll,
+                //     dice,
+                //     diceCount,
+                //     diceType,
+                //     fixedValue,
+                //     remainder
+                // })
                 
                 let attackRolls = [
                     {
@@ -231,13 +228,17 @@
                         damage_type: damageType,
                         dice_count: diceCount,
                         dice_type: diceType,
-                        fixed_val: fixedValue,
                         miss_mod: 0
-                    }]
+                    }
+                ]
+                
+                if (fixedValue) {
+                    attackRolls[0].fixed_val = fixedValue;
+                }
                 
                 let actionList = [
                     {
-                        "type": attackType,
+                        "type": reAttackType(attackType),
                         "attack_bonus": attackBonus,
                         "rolls": attackRolls
                     }
@@ -250,11 +251,26 @@
                     range: getAttackDistance(reach, 'range'),
                     action_list: actionList,
                 }
+                console.log('action_list', actionList);
                 actionsArray.push(actionObject);
             }
             
         });
         return actionsArray;
+    }
+    
+    function reAttackType(string) {
+        console.log('string', string)
+        let typeKeys = {
+            "Melee Weapon Attack": "melee_weapon",
+            "Ranged Weapon Attack": "ranged_weapon",
+            "Melee or Ranged Spell Attack": "melee_or_ranged_spell",
+        }
+        for (let key in typeKeys) {
+            if (string.includes(key)) {
+                return typeKeys[key];
+            }
+        }
     }
     
     function reSize(array) {

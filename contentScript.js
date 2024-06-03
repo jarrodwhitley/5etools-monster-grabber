@@ -254,7 +254,48 @@
                 console.log('action_list', actionList);
                 actionsArray.push(actionObject);
             }
-            
+            // Handle multi-type attacks
+            if (attackType === "Melee or Ranged Weapon Attack") {
+                addNonLoadableProperties('Melee or Ranged Weapon Attack', 'Multi-type attacks are not currently supported');
+            }
+            //   if (attackType === "Melee or Ranged Weapon Attack") {
+            //         let meleeActionObject = {
+            //               name: removeRollCharacters(action.name),
+            //               desc: removeRollCharacters(action.entries[0]),
+            //               reach: getAttackDistance(reach, 'reach'),
+            //               action_list: [
+            //                     {
+            //                           "type": "melee_weapon",
+            //                           "attack_bonus": attackBonus,
+            //                           "rolls": attackRolls
+            //                     }
+            //               ],
+            //         }
+            //         actionsArray.push(meleeActionObject);
+            //
+            //         var rangedActionObject = {
+            //               name: removeRollCharacters(action.name),
+            //               desc: removeRollCharacters(action.entries[0]),
+            //               range: getAttackDistance(reach, 'range'),
+            //               action_list: [
+            //                     {
+            //                           "type": "ranged_weapon",
+            //                           "attack_bonus": attackBonus,
+            //                           "rolls": attackRolls
+            //                     }
+            //               ],
+            //         }
+            //         actionsArray.push(rangedActionObject);
+            //   } else {
+            //         let actionObject = {
+            //               name: removeRollCharacters(action.name),
+            //               desc: removeRollCharacters(action.entries[0]),
+            //               reach: getAttackDistance(reach, 'reach'),
+            //               range: getAttackDistance(reach, 'range'),
+            //               action_list: actionList,
+            //         }
+            //         actionsArray.push(actionObject);
+            //   }
         });
         return actionsArray;
     }

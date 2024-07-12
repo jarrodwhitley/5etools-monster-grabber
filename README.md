@@ -16,7 +16,7 @@ Copy the JSON data of a creature from 5etools.com and restructure the data to fi
 - Move buttons to extension popup rather than inject them into the page
 
 ## How to test
-1. Download the repository
+1. Download the repository (Click Code -> Download ZIP)
 2. Open Chrome and navigate to `chrome://extensions/`
 3. Enable Developer mode
 4. Click on `Load unpacked` and select the repository folder

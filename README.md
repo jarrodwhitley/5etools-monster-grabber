@@ -20,7 +20,7 @@ Copy the JSON data of a creature from 5etools.com and restructure the data to fi
 2. Open Chrome and navigate to `chrome://extensions/`
 3. Enable Developer mode
 4. Click on `Load unpacked` and select the repository folder
-5. Navigate to [5etools.com](https://5e.tools/bestiary) and select a creature
+5. Navigate to [5etools.com](https://5e.tools/bestiary.html) and select a creature
 6. Click on the "Copy JSON" button
 7. Visit the [Shieldmaiden NPCs page](https://shieldmaiden.app/content/npcs) and click "Import".
 8. Paste JSON into the "JSON Input" field and click "Parse JSON"

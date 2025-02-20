@@ -5,7 +5,7 @@
     let buttonStyleStr = 'background: linear-gradient(to bottom, #ce0000, #8a0000); color: white; border: none; margin-left: 5px; border-radius: 3px 3px 0 0; cursor: pointer;';
     let buttonStyleStrGreen = 'background: linear-gradient(to bottom, #5cb85c, #366c36); color: white; border: none; margin-left: 5px; border-radius: 3px 3px 0 0; cursor: pointer;';
     button.style = buttonStyleStr;
-    document.querySelector('.wrp-stat-tab').appendChild(button);
+    document.querySelector('#stat-tabs').appendChild(button);
     
     function reAlignment(array) {
         if (!array) return;
@@ -137,8 +137,22 @@
             if (range) return range.toString();
         }
     }
+
+    // function handleMultiattack(array) {
+    //     let multiAttack = array[0];
+    //     let multiAttackDesc = removeRollCharacters(multiAttack.entries[0]);
+    //     let multiAttackArray = multiAttackDesc.split(', ');
+    //     let multiAttackObject = {
+    //         name: removeRollCharacters(multiAttack.name),
+    //         desc: multiAttackDesc
+    //     }
+    // }
     
     function reActions(array) {
+        if (array[0].name === 'Multiattack') {
+           nonLoadableProperties.push('Multiattack');
+           return
+        }
         let actionsArray = [];
         array.forEach((action) => {
             let descString = removeRollCharacters(action.entries[0]);
@@ -177,35 +191,32 @@
                         sectionsString += '\n';
                     }
                 });
-
                 actionsArray.push({
                     name: removeRollCharacters(action.name),
                     desc: removeRollCharacters(sectionsString),
                     recharge: checkRecharge(action.name)
                 })
-                
             } else { // Handle attack actions
                 descString = removeRollCharacters(descString);
-                // console.log(descString);
-                let [type, reach, roll] = descString.split(',');
+                var [type, reach, roll] = descString.split(',');
                 if (!type || !reach || !roll) return;
                 // console.table({
                 //     type,
                 //     reach,
                 //     roll
                 // })
-                let attackType = type.split('+')[0].trim();
-                let attackBonus = type.split('+')[1] || 0;
+                var attackType = type.split('+')[0].trim();
+                var attackBonus = type.split('+')[1] || 0;
                 if (attackBonus) attackBonus = Number(attackBonus.split(' ')[0]) || 0;
-                let attackAverage = Number(roll.split('Hit: ')[1]?.split(' ')[0]) || 0;
-                let targetCount = roll.split('target')[0].trim();
-                let remainder = roll?.split(')')[1]?.trim();
-                let damageType = remainder?.split(' ')[0];
-                let damageDiceRoll = roll?.split('(')[1]?.split(')')[0];
-                let dice = damageDiceRoll?.split(' +')[0];
-                let diceCount = Number(dice?.split('d')[0]);
-                let diceType = Number(dice?.split('d')[1]);
-                let fixedValue = Number(damageDiceRoll?.split('+ ')[1]);
+                var attackAverage = Number(roll.split('Hit: ')[1]?.split(' ')[0]) || 0;
+                var targetCount = roll.split('target')[0].trim();
+                var remainder = roll?.split(')')[1]?.trim();
+                var damageType = remainder?.split(' ')[0];
+                var damageDiceRoll = roll?.split('(')[1]?.split(')')[0];
+                var dice = damageDiceRoll?.split(' +')[0];
+                var diceCount = Number(dice?.split('d')[0]);
+                var diceType = Number(dice?.split('d')[1]);
+                var fixedValue = Number(damageDiceRoll?.split('+ ')[1]);
                 
                 // console.table({
                 //     descString,
@@ -222,42 +233,19 @@
                 //     remainder
                 // })
                 
-                let attackRolls = [
-                    {
-                        special: [],
-                        damage_type: damageType,
-                        dice_count: diceCount,
-                        dice_type: diceType,
-                        miss_mod: 0
-                    }
-                ]
+                var attackRolls = createAttackRolls(damageType, diceCount, diceType, fixedValue);
                 
-                if (fixedValue) {
-                    attackRolls[0].fixed_val = fixedValue;
-                }
+                var actionList = createActionList(attackType, attackBonus, attackRolls);
                 
-                let actionList = [
-                    {
-                        "type": reAttackType(attackType),
-                        "attack_bonus": attackBonus,
-                        "rolls": attackRolls
-                    }
-                ]
+                let actionObject = createActionObject(action, actionList, attackType, attackBonus, attackRolls, reach, fixedValue);
                 
-                let actionObject = {
-                    name: removeRollCharacters(action.name),
-                    desc: removeRollCharacters(action.entries[0]),
-                    reach: getAttackDistance(reach, 'reach'),
-                    range: getAttackDistance(reach, 'range'),
-                    action_list: actionList,
-                }
-                console.log('action_list', actionList);
                 actionsArray.push(actionObject);
             }
             // Handle multi-type attacks
             if (attackType === "Melee or Ranged Weapon Attack") {
                 addNonLoadableProperties('Melee or Ranged Weapon Attack', 'Multi-type attacks are not currently supported');
             }
+
             //   if (attackType === "Melee or Ranged Weapon Attack") {
             //         let meleeActionObject = {
             //               name: removeRollCharacters(action.name),
@@ -297,7 +285,53 @@
             //         actionsArray.push(actionObject);
             //   }
         });
+        // console.log('actionsArray before', actionsArray)
+        // if (actionsArray[0].name === 'Multiattack') {
+        //     let action_list = [];
+        //     // add every entry in actionsArray to the action_list array except the first one then remove those entries from teh actionsArray
+        //     for (let i = 1; i < actionsArray.length; i++) {
+        //         action_list.push(actionsArray[i]);
+        //         actionsArray = actionsArray.filter((item, index) => index !== i);
+        //     }
+        //     actionsArray[0].action_list = action_list;
+        //     console.log('actionsArray after', actionsArray)
+
+        // }
         return actionsArray;
+    }
+    
+    function createAttackRolls(damageType, diceCount, diceType) {
+        return {
+            special: [],
+            damage_type: damageType,
+            dice_count: diceCount,
+            dice_type: diceType,
+            miss_mod: 0
+        }
+    }
+    
+    function createActionObject(action, actionList, attackType, attackBonus, attackRolls, reach, fixedValue) {
+        let obj = {
+            name: removeRollCharacters(action.name),
+            desc: removeRollCharacters(action.entries[0]),
+            reach: getAttackDistance(reach, 'reach'),
+            range: getAttackDistance(reach, 'range'),
+            action_list: actionList,
+        }
+        
+        if (fixedValue) {
+            obj.fixed_val = fixedValue;
+        }
+        
+        return obj
+    }
+    
+    function createActionList(attackType, attackBonus, attackRolls) {
+        return {
+            type: reAttackType(attackType),
+            attack_bonus: attackBonus,
+            rolls: attackRolls
+        }
     }
     
     function reAttackType(string) {
@@ -517,7 +551,9 @@
         };
     }
     
-    function createNonLoadableModal(array) {
+    function createNonLoadableModal(Strings) {
+        let array = [...Strings]
+        console.log('creating modal', array);
         let modal = document.createElement('div');
         modal.id = 'modal';
         modal.style = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; z-index: 10';

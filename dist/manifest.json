@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "5etools Monster Grabber",
+  "description": "Copy and transform 5etools creature JSON for Shieldmaiden import.",
+  "version": "1.2.0",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "monster_grabber_icon.png"
+  },
+  "icons": {
+    "16": "monster_grabber_icon.png",
+    "32": "monster_grabber_icon.png",
+    "48": "monster_grabber_icon.png",
+    "128": "monster_grabber_icon.png"
+  },
+  "permissions": [
+    "tabs",
+    "storage"
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "assets/main.js-BVT8zO1G.js"
+      ],
+      "matches": [
+        "https://5e.tools/*",
+        "https://*.5e.tools/*"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "https://*.5e.tools/*",
+        "https://5e.tools/*"
+      ],
+      "resources": [
+        "assets/main.js-BVT8zO1G.js",
+        "assets/main.js-BVT8zO1G.js.map"
+      ],
+      "use_dynamic_url": false
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Monster Grabber</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <script type="module" crossorigin src="/assets/popup.html-BK-Hw81h.js"></script>
+      <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-wMinxHhO.js">
+      <link rel="stylesheet" crossorigin href="/assets/popup-Ce7vAS_q.css">
+    </head>
+    <body>
+    <div class="container">
+        <div class="backdrop-glow" aria-hidden="true"></div>
+        <header class="panel-header">
+            <div class="title-wrap">
+                <h1 class="heading">5etools Monster Grabber</h1>
+                <p class="subtitle">Capture creatures and prep Shieldmaiden-ready JSON in one click.</p>
+            </div>
+        </header>
+
+        <section class="status-card" aria-live="polite">
+            <div class="status-chip">Status</div>
+            <div id="status">Open a 5etools bestiary page and capture monsters from here.</div>
+        </section>
+
+        <div class="actions-row">
+            <button id="capture-monster" type="button">Copy Monster</button>
+            <button id="open-options" type="button">Settings</button>
+        </div>
+
+        <section class="history-section">
+            <div class="history-header-row">
+                <div class="history-header">Captured Monsters</div>
+            </div>
+            <div id="history" class="history"></div>
+        </section>
+    </div>
+    </body>
+</html>

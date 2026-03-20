@@ -132,17 +132,8 @@
         const normalizedNpc = sanitizeNpcForImport(npc);
         const key = normalizedNpc?.harmless_key || fallbackKey || `${Date.now()}`;
         return {
-            npcs: {
-                [key]: {
-                    ...normalizedNpc,
-                    harmless_key: key,
-                },
-            },
-            meta: {
-                export_version: '2.0',
-                export_date: new Date().toISOString(),
-                author: '5etools-monster-grabber',
-            },
+            ...normalizedNpc,
+            harmless_key: key,
         };
     }
 
@@ -180,7 +171,7 @@
             copyBtn.addEventListener('click', async () => {
                 const payload = buildNpcImportPayload(item.json, item.id);
                 await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
-                setStatus(`Copied ${item.name} as import JSON.`);
+                setStatus(`Copied ${item.name} as NPC JSON.`);
             });
 
             const deleteBtn = document.createElement('button');

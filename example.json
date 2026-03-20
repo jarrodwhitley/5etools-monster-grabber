@@ -1,0 +1,158 @@
+{
+  "actions": [
+    {
+      "action_list": [
+        {
+          "type": "other",
+          "rolls": []
+        }
+      ],
+      "desc": "The aspect makes one Bite attack, one Claw attack, and one Tail attack.",
+      "name": "Multiattack"
+    },
+    {
+      "action_list": [
+        {
+          "attack_bonus": 19,
+          "rolls": [
+            {
+              "damage_type": "piercing",
+              "dice_count": 2,
+              "dice_type": 12,
+              "fixed_val": 10,
+              "miss_mod": 0,
+              "special": []
+            }
+          ],
+          "type": "melee_weapon"
+        }
+      ],
+      "desc": "Melee Weapon Attack: +19 to hit, reach 20 ft., one target. Hit: 23 (2d12 + 10) piercing damage plus 22 (4d10) force damage.",
+      "name": "Bite",
+      "reach": 20
+    },
+    {
+      "action_list": [
+        {
+          "attack_bonus": 19,
+          "rolls": [
+            {
+              "damage_type": "slashing",
+              "dice_count": 2,
+              "dice_type": 10,
+              "fixed_val": 10,
+              "miss_mod": 0,
+              "special": []
+            }
+          ],
+          "type": "melee_weapon"
+        }
+      ],
+      "desc": "Melee Weapon Attack: +19 to hit, reach 15 ft., one target. Hit: 21 (2d10 + 10) slashing damage. If the target is a Huge or smaller creature, it is grappled (escape DC 20) and is {@condition restrained} until this grapple ends. The aspect can have only one creature {@condition grappled} this way at a time.",
+      "name": "Claw",
+      "reach": 15
+    },
+    {
+      "action_list": [
+        {
+          "attack_bonus": 19,
+          "rolls": [
+            {
+              "damage_type": "bludgeoning",
+              "dice_count": 2,
+              "dice_type": 12,
+              "fixed_val": 10,
+              "miss_mod": 0,
+              "special": []
+            }
+          ],
+          "type": "melee_weapon"
+        }
+      ],
+      "desc": "Melee Weapon Attack: +19 to hit, reach 15 ft., one target. Hit: 23 (2d12 + 10) bludgeoning damage. If the target is a creature, it must succeed on a DC 27 Strength saving throw or be knocked prone.",
+      "name": "Tail",
+      "reach": 15
+    },
+    {
+      "action_list": [
+        {
+          "type": "other",
+          "rolls": []
+        }
+      ],
+      "desc": "The aspect uses one of the following breath weapons: Exalting Breath\nundefined Platinum Breath\nundefined",
+      "name": "Breath Weapon",
+      "recharge": "5-6"
+    }
+  ],
+  "alignment": "Lawful good",
+  "armor_class": 23,
+  "avatar": "https://5e.tools/img/bestiary/tokens/FTD/Aspect%20of%20Bahamut.webp",
+  "burrow_speed": 60,
+  "challenge_rating": 30,
+  "charisma": 30,
+  "condition_immunities": [
+    "charmed",
+    "deafened",
+    "frightened",
+    "paralyzed",
+    "stunned"
+  ],
+  "constitution": 29,
+  "created": 1774026178244,
+  "damage_immunities": [
+    "bludgeoning",
+    "piercing",
+    "slashing"
+  ],
+  "dexterity": 18,
+  "fly_speed": 120,
+  "harmless_key": "1774026178244-dln6vbde",
+  "hit_dice": "30d20",
+  "hit_points": 585,
+  "intelligence": 25,
+  "languages": [
+    "Common",
+    "Draconic"
+  ],
+  "name": "Aspect of Bahamut",
+  "saving_throws": [
+    "constitution",
+    "intelligence",
+    "wisdom",
+    "charisma"
+  ],
+  "senses": {
+    "truesight": {
+      "comments": "",
+      "range": 120,
+      "truesight": true
+    }
+  },
+  "size": "Gargantuan",
+  "skills": [
+    "insight",
+    "perception",
+    "persuasion"
+  ],
+  "special_abilities": [
+    {
+      "desc": "If the aspect would be reduced to 0 hit points, his current hit point total instead resets to 500 hit points, he recharges his Breath Weapon, and he regains any expended uses of Legendary Resistance. Additionally, the aspect can now use the options in the \"Mythic Actions\" section for 1 hour. Award a party an additional 155,000 XP (310,000 XP total) for defeating the aspect of Bahamut after his Platinum Brilliance activates.",
+      "name": "Platinum Brilliance (Recharges after a Short or Long Rest)"
+    },
+    {
+      "desc": "If the aspect fails a saving throw, he can choose to succeed instead.",
+      "name": "Legendary Resistance (5/Day)"
+    },
+    {
+      "desc": "The aspect magically transforms into any Humanoid or Beast, while retaining his game statistics (other than his size). This transformation ends if the aspect is reduced to 0 hit points or if he uses a bonus action to end it.",
+      "name": "Change Shape"
+    }
+  ],
+  "strength": 30,
+  "swim_speed": 60,
+  "type": "Dragon",
+  "updated": 1774026178244,
+  "walk_speed": 60,
+  "wisdom": 28
+}

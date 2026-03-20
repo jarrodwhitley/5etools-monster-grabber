@@ -116,13 +116,22 @@
     function reSense(array) {
         if (!array) return
         let sensesObject = {};
+        const validSenseKeys = new Set(['blindsight', 'darkvision', 'tremorsense', 'truesight']);
         array.forEach((item) => {
             let splitItem = item.split(' ');
-            let sense = splitItem[0];
-            let range = splitItem[1];
+            let rawSense = splitItem[0] || '';
+            let sense = rawSense.toLowerCase();
+            if (!validSenseKeys.has(sense)) {
+                addNonLoadableProperties('Senses', rawSense);
+                return;
+            }
+
+            const rangeMatch = item.match(/(\d+)/);
+            let range = rangeMatch ? Number(rangeMatch[1]) : 0;
+
             sensesObject[sense] = {
                 [sense]: true,
-                "range": Number(range),
+                "range": range,
                 "comments": "",
             }
         });
@@ -189,7 +198,47 @@
             .replace(/{@recharge (\d+)}/, '')
             .replace(/{@spell ([^}|]+)(?:\|[^}]+)?}/, '$1')
             .replace(/{@condition (\w+)}/, '$1')
+            .replace(/{@variantrule ([^}|]+)(?:\|[^}]+)?}/, '$1')
+            .replace(/{@actSave (\w+)}/, 'Save $1')
+            .replace(/{@actSaveFail}/, 'On failed save:')
+            .replace(/{@actSaveSuccess}/, 'On successful save:')
+            .replace(/\s{2,}/g, ' ')
             .trim();
+    }
+
+    function parseAttackMeta(descString) {
+        if (!descString || typeof descString !== 'string') {
+            return null;
+        }
+
+        const attackTypeTextMatch = descString.match(/^(Melee Weapon Attack|Ranged Weapon Attack|Melee Spell Attack|Ranged Spell Attack|Melee or Ranged Weapon Attack|Melee or Ranged Spell Attack)/i);
+        const attackType = attackTypeTextMatch ? attackTypeTextMatch[1] : null;
+
+        const attackBonusMatch = descString.match(/\+\s*(-?\d+)/);
+        const attackBonus = attackBonusMatch ? Number(attackBonusMatch[1]) : 0;
+
+        const reachMatch = descString.match(/reach\s+(\d+)\s*ft\.?/i);
+        const rangeMatch = descString.match(/range\s+(\d+(?:\/\d+)?)\s*ft\.?/i);
+
+        const damageMatch = descString.match(/Hit:\s*\d+\s*\((\d+)d(\d+)(?:\s*([+-])\s*(\d+))?\)\s*([A-Za-z_ ]+?)\s+damage/i);
+
+        const diceCount = damageMatch ? Number(damageMatch[1]) : undefined;
+        const diceType = damageMatch ? Number(damageMatch[2]) : undefined;
+        const fixedSign = damageMatch ? damageMatch[3] : undefined;
+        const fixedNum = damageMatch ? Number(damageMatch[4]) : undefined;
+        const fixedValue = Number.isFinite(fixedNum) ? (fixedSign === '-' ? -fixedNum : fixedNum) : undefined;
+        const damageType = damageMatch ? damageMatch[5] : undefined;
+
+        return {
+            attackType,
+            attackBonus,
+            reach: reachMatch ? Number(reachMatch[1]) : undefined,
+            range: rangeMatch ? rangeMatch[1] : undefined,
+            damageType,
+            diceCount,
+            diceType,
+            fixedValue,
+        };
     }
     
     function checkRecharge(string) {
@@ -283,46 +332,25 @@
                 })
             } else { // Handle attack actions
                 descString = removeRollCharacters(descString);
-                var [type, reach, roll] = descString.split(',');
-                if (!type || !reach || !roll) return;
-                // console.table({
-                //     type,
-                //     reach,
-                //     roll
-                // })
-                attackType = type.split('+')[0].trim();
-                var attackBonusMatch = type.match(/\+\s*(-?\d+)/);
-                var attackBonus = attackBonusMatch ? Number(attackBonusMatch[1]) : 0;
-                var attackAverage = Number(roll.split('Hit: ')[1]?.split(' ')[0]) || 0;
-                var targetCount = roll.split('target')[0].trim();
-                var remainder = roll?.split(')')[1]?.trim();
-                var damageType = remainder?.split(' ')[0];
-                var damageDiceRoll = roll?.split('(')[1]?.split(')')[0];
-                var dice = damageDiceRoll?.split(' +')[0];
-                var diceCount = Number(dice?.split('d')[0]);
-                var diceType = Number(dice?.split('d')[1]);
-                var fixedValue = Number(damageDiceRoll?.split('+ ')[1]);
-                
-                // console.table({
-                //     descString,
-                //     attackBonus,
-                //     attackType,
-                //     attackAverage,
-                //     targetCount,
-                //     damageType,
-                //     damageDiceRoll,
-                //     dice,
-                //     diceCount,
-                //     diceType,
-                //     fixedValue,
-                //     remainder
-                // })
-                
-                var attackRolls = createAttackRolls(damageType, diceCount, diceType, fixedValue);
-                
-                var actionList = createActionList(attackType, attackBonus, attackRolls);
-                
-                let actionObject = createActionObject(action, actionList, reach);
+                const parsed = parseAttackMeta(descString);
+                attackType = parsed?.attackType;
+
+                if (!attackType) {
+                    actionsArray.push({
+                        name: removeRollCharacters(action.name),
+                        desc: descString,
+                        recharge: checkRecharge(action.name),
+                        action_list: [{ type: 'other' }],
+                    });
+                    return;
+                }
+
+                var attackRolls = createAttackRolls(parsed.damageType, parsed.diceCount, parsed.diceType, parsed.fixedValue);
+                var actionList = createActionList(attackType, parsed.attackBonus, attackRolls);
+                let actionObject = createActionObject(action, actionList, {
+                    reach: parsed.reach,
+                    range: parsed.range,
+                });
                 
                 actionsArray.push(actionObject);
 
@@ -414,13 +442,28 @@
     }
 
     function createAttackRolls(damageType, diceCount, diceType, fixedValue) {
+        const hasDamageDice = Number.isFinite(diceCount) && Number.isFinite(diceType);
+        const normalizedDamage = normalizeDamageType(damageType);
+        if (!hasDamageDice && !normalizedDamage) {
+            return [];
+        }
+
         const roll = {
             special: [],
-            damage_type: normalizeDamageType(damageType),
-            dice_count: Number.isFinite(diceCount) ? diceCount : 1,
-            dice_type: Number.isFinite(diceType) ? diceType : 6,
+            damage_type: normalizedDamage,
             miss_mod: 0
         };
+
+        if (Number.isFinite(diceCount)) {
+            roll.dice_count = diceCount;
+        }
+        if (Number.isFinite(diceType)) {
+            roll.dice_type = diceType;
+        }
+
+        if (!roll.damage_type) {
+            delete roll.damage_type;
+        }
 
         if (Number.isFinite(fixedValue)) {
             roll.fixed_val = fixedValue;
@@ -429,13 +472,19 @@
         return [roll];
     }
     
-    function createActionObject(action, actionList, reach) {
+    function createActionObject(action, actionList, distances) {
         let obj = {
             name: removeRollCharacters(action.name),
             desc: removeRollCharacters(action.entries[0]),
-            reach: getAttackDistance(reach, 'reach'),
-            range: getAttackDistance(reach, 'range'),
             action_list: actionList,
+        }
+
+        if (Number.isFinite(distances?.reach)) {
+            obj.reach = distances.reach;
+        }
+
+        if (typeof distances?.range === 'string' && distances.range.length) {
+            obj.range = distances.range;
         }
         
         return obj
@@ -474,7 +523,13 @@
             "H": "Huge",
             "G": "Gargantuan",
         }
-        return sizeKey[array[0]];
+        if (!Array.isArray(array) || !array.length) {
+            return 'Medium';
+        }
+        if (array.includes('M')) {
+            return 'Medium';
+        }
+        return sizeKey[array[0]] || 'Medium';
     }
     
     function reSavingThrows(array) {
@@ -646,6 +701,8 @@
     
     function restructureData(data) {
         const avatarEl = document.querySelector('#float-token img');
+        const traitAbilities = reSpecialAbilities(data.trait) || [];
+        const bonusAbilities = reSpecialAbilities(data.bonus) || [];
 
         return {
             name: data.name,
@@ -677,7 +734,7 @@
             damage_resistances: reResistances(data.resist, 'Damage Resistances'),
             damage_immunities: reDamageImmunities(data.immune, 'Damage Immunities'),
             damage_vulnerabilities: data.vulnerable,
-            special_abilities: reSpecialAbilities(data.trait),
+            special_abilities: [...traitAbilities, ...bonusAbilities],
             actions: reActions(data.action),
             skills: getObjectKeys(data.skill),
             avatar: avatarEl ? avatarEl.src : undefined,

@@ -1,3 +1,7 @@
 dragon.json
 test.json
 *.idea
+dist/
+*.zip
+.DS_Store
+artifacts/

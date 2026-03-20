@@ -3,6 +3,27 @@ Copy the JSON data of a creature from 5etools.com and restructure the data to fi
 
 **Note:** this tool is currently in its testing phase.
 
+## Project Structure
+- `manifest.json`: Manifest V3 extension configuration
+- `popup.html`: Popup UI shell
+- `app.css`: Popup styles
+- `options.html`: Extension settings UI
+- `options.css`: Options page styles
+- `src/content/main.js`: Content script logic injected into 5etools pages
+- `src/popup/main.js`: Popup controller/status logic
+- `src/options/main.js`: Options settings persistence logic
+- `docs/ARCHITECTURE.md`: Runtime architecture notes
+- `docs/CHROME_WEB_STORE_CHECKLIST.md`: Pre-submission and packaging checklist
+
+## Packaging for Release
+1. Run `npm run package`
+2. Upload the generated zip from `artifacts/`
+
+## Development and Build
+1. `npm install`
+2. `npm run dev` for extension development with Vite
+3. `npm run build` for production build output in `dist/`
+
 ## Known Issues
 - Some stats are not being copied over if their value is different from most creatures (Aberrant Spirit, for example)
 
@@ -14,6 +35,9 @@ Copy the JSON data of a creature from 5etools.com and restructure the data to fi
 - Add option to open JSON in a new tab (currently working just not implemented)
 - Add option to download JSON (currently working just not implemented)
 - Move buttons to extension popup rather than inject them into the page
+
+## Chrome Web Store Prep
+Use `docs/CHROME_WEB_STORE_CHECKLIST.md` before every submission.
 
 ## How to test
 1. Download the repository (Click Code -> Download ZIP)

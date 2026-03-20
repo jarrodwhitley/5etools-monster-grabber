@@ -1,0 +1,58 @@
+{
+  "actions": [
+    {
+      "desc": "The aarakocra makes two Wind Staff attacks, and it can use Spellcasting to cast {@spell Gust of Wind|XPHB}.",
+      "name": "Multiattack"
+    },
+    {
+      "action_list": [
+        {
+          "attack_bonus": 0,
+          "rolls": {
+            "damage_type": "Bludgeoning",
+            "dice_count": 1,
+            "dice_type": 8,
+            "miss_mod": 0,
+            "special": []
+          }
+        }
+      ],
+      "desc": "{@atkr m,r} +5, reach 5 ft. or range 120 ft. Hit: 7 (1d8 + 3) Bludgeoning damage plus 11 (2d10) Lightning damage.",
+      "fixed_val": 3,
+      "name": "Wind Staff"
+    }
+  ],
+  "alignment": "Neutral",
+  "armor_class": 16,
+  "avatar": "https://5e.tools/img/bestiary/tokens/XMM/Aarakocra%20Aeromancer.webp",
+  "challenge_rating": 4,
+  "charisma": 12,
+  "constitution": 12,
+  "created": 1774024040212,
+  "dexterity": 16,
+  "fly_speed": 50,
+  "harmless_key": "1774024040212-fpgta2kx",
+  "hit_dice": "12d8",
+  "hit_points": 66,
+  "intelligence": 13,
+  "languages": [
+    "Aarakocra",
+    "Primordial (Auran)"
+  ],
+  "name": "Aarakocra Aeromancer",
+  "saving_throws": [
+    "dexterity",
+    "wisdom"
+  ],
+  "size": "Medium",
+  "skills": [
+    "arcana",
+    "nature",
+    "perception"
+  ],
+  "strength": 10,
+  "type": "Elemental",
+  "updated": 1774024040212,
+  "walk_speed": 20,
+  "wisdom": 17
+}

@@ -1,6 +1,6 @@
 body {
     background: black;
-    width: 250px;
+    width: 320px;
     margin: 0 auto;
 }
 
@@ -21,4 +21,121 @@ body {
     margin: 0;
     color: white;
     font-size: 18px;
+}
+
+#status {
+    color: #d8d8d8;
+    font-size: 13px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+#open-options {
+    background: #1f1f1f;
+    color: #f2f2f2;
+    border: 1px solid #525252;
+    border-radius: 4px;
+    font-size: 12px;
+    padding: 0.35rem 0.6rem;
+    cursor: pointer;
+}
+
+#open-options:hover {
+    background: #2a2a2a;
+}
+
+#capture-monster {
+    background: #8a0000;
+    color: #ffffff;
+    border: 1px solid #ab2f2f;
+    border-radius: 4px;
+    font-size: 12px;
+    padding: 0.35rem 0.6rem;
+    cursor: pointer;
+}
+
+#capture-monster:hover {
+    background: #a10000;
+}
+
+.actions-row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.history-header {
+    width: 100%;
+    color: #efefef;
+    font-size: 12px;
+    font-weight: 700;
+    border-top: 1px solid #4a4a4a;
+    padding-top: 0.75rem;
+}
+
+.history {
+    width: 100%;
+    max-height: 280px;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.history-item {
+    border: 1px solid #4e4e4e;
+    border-radius: 4px;
+    padding: 0.45rem;
+    background: #262626;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.history-item-name {
+    color: #ececec;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.history-copy-btn {
+    background: #2e6e2e;
+    color: #fff;
+    border: 1px solid #3f8e3f;
+    border-radius: 4px;
+    font-size: 11px;
+    padding: 0.3rem 0.45rem;
+    cursor: pointer;
+    flex: 0 0 auto;
+}
+
+.history-copy-btn:hover {
+    background: #3c863c;
+}
+
+.history-item-actions {
+    display: flex;
+    gap: 0.35rem;
+    flex: 0 0 auto;
+}
+
+.history-delete-btn {
+    background: #6a1b1b;
+    color: #fff;
+    border: 1px solid #8a2a2a;
+    border-radius: 4px;
+    font-size: 11px;
+    padding: 0.3rem 0.45rem;
+    cursor: pointer;
+}
+
+.history-delete-btn:hover {
+    background: #842424;
+}
+
+.history-empty {
+    color: #bdbdbd;
+    font-size: 12px;
 }

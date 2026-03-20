@@ -1,0 +1,15 @@
+{
+  "name": "5etools-monster-grabber",
+  "version": "1.2.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:watch": "vite build --watch",
+    "package": "npm run build && bash ./scripts/package-extension.sh"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.4.0",
+    "vite": "^8.0.1"
+  }
+}
